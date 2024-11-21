@@ -9,6 +9,7 @@
         'security/record_rules.xml',
         'data/sequence.xml',
         'views/task_mgmt_view.xml',
+        'views/menu_item.xml'
         # 'views/users_inherit_view.xml'
     ],
     # 'assets': {

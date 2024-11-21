@@ -30,10 +30,20 @@
 <!--                <field name="domain_force">[('status', '=', 'user_check')]</field>-->
 <!--        </record>-->
 
-         <record id="task_completed_reporting_manager" model="ir.rule">
+<!--         <record id="task_view_users" model="ir.rule">-->
+<!--            <field name="name">Only assigned Tasks for Users</field>-->
+<!--            <field name="model_id" ref="model_task_management"/> &lt;!&ndash; Adjust with your task model name &ndash;&gt;-->
+<!--            <field name="domain_force">[('user_id', '=', user.id)]</field>-->
+<!--            <field name="groups" eval="[(4, ref('task_management.group_user'))]"/>-->
+<!--            <field name="perm_read" eval="1"/>-->
+<!--            <field name="perm_write" eval="1"/>-->
+<!--            <field name="perm_create" eval="1"/>-->
+<!--            <field name="perm_unlink" eval="1"/>-->
+<!--        </record>-->
+        <record id="task_completed_reporting_manager_rule" model="ir.rule">
             <field name="name">Only Completed Tasks for Reporting Manager</field>
             <field name="model_id" ref="model_task_management"/> <!-- Adjust with your task model name -->
-            <field name="domain_force">[('status', 'in', ['completed', 'reporting'])]</field>
+            <field name="domain_force">[('status', '=', 'reporting')]</field>
             <field name="groups" eval="[(4, ref('task_management.group_reporting_manager'))]"/>
             <field name="perm_read" eval="1"/>
             <field name="perm_write" eval="0"/>
