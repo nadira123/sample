@@ -6,7 +6,7 @@
         <field name="arch" type="xml">
             <form string="Task Creation">
                 <header>
-                    <field name="status" widget="statusbar" options="{'clickable': False}" statusbar_visible="inspection, monitoring, agree_disagree, corrections, completed, reporting" groups="task_management.group_inspector,task_management.group_admin, task_management.group_user"/>
+                    <field name="status" widget="statusbar" options="{'clickable': True}" statusbar_visible="inspection, monitoring, user_check, action, reporting, completed" groups="task_management.group_inspector,task_management.group_admin"/>
                     <button name="action_submit_for_monitoring" type="object" string="Submit" class="oe_highlight"
                         invisible= "status != 'inspection'" groups="task_management.group_inspector, task_management.group_admin"/>
 
@@ -18,41 +18,44 @@
 
                     <button name="action_user_add_comment" type="object" string="Submit" class="oe_highlight"
                         invisible= "status != 'user_check'" groups="task_management.group_user"/>
-                    <button name="action_admin_review" type="object" string="Admin Review" invisible="status != 'agree_disagree'" groups="task_management.group_admin"/>
+                    <button name="action_admin_review" type="object" string="Admin Review" class="oe_highlight" invisible="status != 'action'" groups="task_management.group_admin"/>
 
 
-                    <button name="action_report_to_manager_or_complete" type="object" string="Mark as Completed" class="oe_highlight"
-                        invisible= "status != 'completed'" groups="task_management.group_inspector,task_management.group_admin"/>
+                    <button name="action_report_to_manager_or_complete" type="object" string="Report To Manager" class="oe_highlight"
+                        invisible= "status != 'action'" groups="task_management.group_inspector,task_management.group_admin"/>
                 </header>
                 <sheet>
                     <group>
                         <group>
-                            <field name="date" readonly="user_id in ('task_management.group_user')"/>
-                            <field name="task_name" readonly="status == 'user_check'"/>
-                            <field name="user_id" invisible="status == 'inspection'" readonly="status == 'user_check'"/>
-                            <field name="department_id" options="{'no_create': True}" readonly="status == 'user_check'"/>
-                            <field name="ledger" readonly="status == 'user_check'"/>
-                            <field name="voucher_type" readonly="status == 'user_check'"/>
+                            <field name="is_readonly" invisible="1"/>
+                            <field name="date" readonly="is_readonly"/>
+                            <field name="task_name" readonly="is_readonly"/>
+                            <field name="user_id" invisible="status == 'inspection'" readonly="is_readonly"/>
+                            <field name="department_id" options="{'no_create': True}" readonly="is_readonly"/>
+                            <field name="ledger" readonly="is_readonly"/>
+                            <field name="voucher_type" readonly="is_readonly"/>
                         </group>
                         <group>
-
-                            <field name="current_user_department_id" invisible="1"/>
-                            <field name="user_manager"/>
-                            <field name="find1"/>
-                            <field name="find2"/>
-                            <field name="remarks"/>
-                            <field name="status" invisible="1"/>
+                            <field name="current_user_department_id" invisible="1" readonly="is_readonly"/>
+                            <field name="deadline" class="is_deadline_overdue == True" options="{'color': 'red'}" readonly="is_readonly"/>
+                            <field name="is_deadline_overdue" invisible="1" readonly="is_readonly"/>
+                            <field name="user_manager" readonly="is_readonly"/>
+                            <field name="find1" readonly="is_readonly"/>
+                            <field name="find2" readonly="is_readonly"/>
+                            <field name="remarks" readonly="is_readonly"/>
+                            <field name="status" invisible="1" readonly="is_readonly"/>
+                            <field name="assign_user" invisible="1"/>
                         </group>
                     </group>
                     <group>
                         <field name="comment" groups="task_management.group_inspector,task_management.group_admin"/>
                         <field name="explanation" invisible = "status in ('inspection','monitoring')"/>
-                        <field name="is_satisfactory" invisible="status != 'agree_disagree'" groups="task_management.group_admin"/>
+                        <field name="is_satisfactory" invisible="status != 'action'" groups="task_management.group_admin"/>
                     </group>
                 </sheet>
                  <div class="oe_chatter">
                     <field name="message_follower_ids" widget="mail_followers"
-                           groups="base.group_user"/>
+                           groups="task_management.group_admin, task_management.group_inspector, task_management.group_reporting_manager"/>
                     <field name="message_ids" widget="mail_thread"/>
                 </div>
             </form>
@@ -77,25 +80,45 @@
         </field>
     </record>
 
+    <record id="view_task_form_user_group" model="ir.ui.view">
+        <field name="name">task.management.form.user.group</field>
+        <field name="model">task.management</field>
+        <field name="inherit_id" ref="task_management.view_task_form"/>
+        <field name="priority" eval="20"/>
+        <field name="arch" type="xml">
+            <!-- Remove Chatter (Logs) -->
+            <xpath expr="//div[@class='oe_chatter']" position="attributes">
+                <attribute name="groups">task_management.group_admin,task_management.group_inspector,task_management.group_reporting_manager</attribute>
+            </xpath>
+        </field>
+    </record>
 
-<!--    <record id="view_task_search" model="ir.ui.view">-->
-<!--        <field name="name">task.management.search</field>-->
-<!--        <field name="model">task.management</field>-->
-<!--        <field name="arch" type="xml">-->
-<!--            <search string="Search Tasks">-->
-<!--                <field name="date"/>-->
-<!--                <field name="task_name"/>-->
-<!--                <field name="department_id"/>-->
-<!--                <field name="voucher_type"/>-->
 
-<!--&lt;!&ndash;            <filter string="My Department" domain="[('department_id', '=', current_user_department_id)]"/>&ndash;&gt;-->
+    <record id="view_task_search" model="ir.ui.view">
+        <field name="name">task.management.search</field>
+        <field name="model">task.management</field>
+        <field name="arch" type="xml">
+            <search string="Search Tasks">
+                <field name="date"/>
+                <field name="task_name"/>
+                <field name="department_id"/>
+                <field name="voucher_type"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <separator/>
+                    <filter string="Date" context="{'group_by':'date'}" name="date"/>
+                    <filter string="Status" context="{'group_by':'status'}" name="state"/>
+                    <separator/>
+                </group>
 <!--                <group expand="1" string="Group By">-->
 <!--                    <filter string="Department" context="{'group_by': 'department_id'}"/>-->
 <!--                    <filter string="Voucher Type" context="{'group_by': 'voucher_type'}"/>-->
 <!--                </group>-->
-<!--            </search>-->
-<!--        </field>-->
-<!--    </record>-->
+            </search>
+        </field>
+    </record>
+
+
 
     <!-- Action -->
     <record id="action_task_management" model="ir.actions.act_window">

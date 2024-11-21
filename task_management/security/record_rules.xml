@@ -19,16 +19,16 @@
             <field name="perm_unlink" eval="1"/>
             <field name="domain_force">[(1, '=', 1)]</field>
         </record>
-        <record id="rule_task_management_user_creation_rule" model="ir.rule">
-                <field name="name">Deny Task Creation for User and Reporting Manager</field>
-                <field name="model_id" ref="model_task_management"/>
-                <field name="groups" eval="[(4, ref('task_management.group_user'))]"/>
-                <field name="perm_create" eval="0"/>
-                <field name="perm_read" eval="1"/>
-                <field name="perm_write" eval="1"/>
-                <field name="perm_unlink" eval="0"/>
-                <field name="domain_force">[('status', '=', 'user_check')]</field>
-        </record>
+<!--        <record id="rule_task_management_user_creation_rule" model="ir.rule">-->
+<!--                <field name="name">Deny Task Creation for User and Reporting Manager</field>-->
+<!--                <field name="model_id" ref="model_task_management"/>-->
+<!--                <field name="groups" eval="[(4, ref('task_management.group_user'))]"/>-->
+<!--                <field name="perm_create" eval="0"/>-->
+<!--                <field name="perm_read" eval="1"/>-->
+<!--                <field name="perm_write" eval="1"/>-->
+<!--                <field name="perm_unlink" eval="0"/>-->
+<!--                <field name="domain_force">[('status', '=', 'user_check')]</field>-->
+<!--        </record>-->
 
          <record id="task_completed_reporting_manager" model="ir.rule">
             <field name="name">Only Completed Tasks for Reporting Manager</field>
@@ -40,5 +40,16 @@
             <field name="perm_create" eval="0"/>
             <field name="perm_unlink" eval="0"/>
         </record>
+
+<!--        <record id="hide_logs_for_user_group" model="ir.rule">-->
+<!--            <field name="name">Hide Logs for User Group</field>-->
+<!--            <field name="model_id" ref="mail.model_mail_message"/>-->
+<!--            <field name="domain_force">[('id', '=', False)]</field> &lt;!&ndash; Prevents group from seeing any logs &ndash;&gt;-->
+<!--            <field name="groups" eval="[(4, ref('task_management.group_user'))]"/>-->
+<!--            <field name="perm_read" eval="0"/> &lt;!&ndash; Prevents access &ndash;&gt;-->
+<!--            <field name="perm_write" eval="0"/>-->
+<!--            <field name="perm_create" eval="0"/>-->
+<!--            <field name="perm_unlink" eval="1"/>-->
+<!--        </record>-->
     </data>
 </odoo>
