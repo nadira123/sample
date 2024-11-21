@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="view_task_tree_user" model="ir.ui.view">
+        <field name="name">task.management.tree</field>
+        <field name="model">task.management</field>
+        <field name="arch" type="xml">
+            <tree string="Tasks">
+                <field name="date"/>
+                <field name="task_name"/>
+                <field name="department_id"/>
+                <field name="ledger"/>
+                <field name="voucher_type"/>
+                <field name="deadline"/>
+                <field name="find1"/>
+                <field name="find2"/>
+                <field name="remarks"/>
+                <field name="status"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_task_user" model="ir.actions.act_window">
+        <field name="name">User Tasks</field>
+        <field name="res_model">task.management</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_task_tree_user"/> <!-- User-specific tree view -->
+        <field name="domain">[('user_id', '=', uid)]</field> <!-- Show only tasks assigned to the user -->
+    </record>
+
+    <!-- Action for Reporting Managers -->
+    <record id="action_task_reporting_manager" model="ir.actions.act_window">
+        <field name="name">Reporting Manager Tasks</field>
+        <field name="res_model">task.management</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="task_management.view_task_tree"/> <!-- Reporting manager-specific tree view -->
+        <field name="domain">[('status', '=', 'reporting')]</field>
+
+    </record>
+
+<!--    <menuitem id="menu_task_management_root" name="Task Management" sequence="10" />-->
+
+
+    <menuitem id="menu_task_user" name="My Tasks"
+        parent="task_management.menu_task_management_root"
+        action="task_management.action_task_user"
+        groups="task_management.group_user"
+        sequence="10"/>
+
+    <!-- Menu for Reporting Managers -->
+    <menuitem id="menu_task_reporting_manager" name="Team Tasks"
+        parent="task_management.menu_task_management_root"
+        action="task_management.action_task_reporting_manager"
+        groups="task_management.group_reporting_manager"
+        sequence="20"/>
+</odoo>
