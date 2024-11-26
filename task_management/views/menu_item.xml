@@ -24,7 +24,7 @@
         <field name="res_model">task.management</field>
         <field name="view_mode">tree,form</field>
         <field name="view_id" ref="view_task_tree_user"/> <!-- User-specific tree view -->
-        <field name="domain">[('user_id', '=', uid)]</field> <!-- Show only tasks assigned to the user -->
+        <field name="domain">[('user_id', '=', uid),('status', '=', 'user_check')]</field> <!-- Show only tasks assigned to the user -->
     </record>
 
     <!-- Action for Reporting Managers -->
